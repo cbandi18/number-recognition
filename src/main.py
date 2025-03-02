@@ -29,18 +29,58 @@ print(X_train.shape)     #Training set has 33600 examples
 print(Y_train.shape)
 
 def initialize_parameters():
+    W1=np.random.rand(10,784)-0.5
+    B1=np.random.rand(10,1)-0.5
+    W2=np.random.rand(10,10)-0.5
+    B2=np.random.rand(10,1)-0.5
 
-    return
+    return W1, B1, W2, B2 
 
-def forward_propagation():
+def ReLU(X):
+    return np.maximum(X,0)
 
-    return
+def softmax_calculator(Z):
+    return np.exp(Z) / sum(np.exp(Z))
 
-def backward_propagation():
+def forward_propagation(W1, B1, W2, B2, X):
+    Z1= W1.dot(X)+B1        # y=mx+c
+    A1=ReLU(Z1)
 
-    return
+    Z2=W2.dot(A1)+B2
+    A2=softmax_calculator(Z2)
 
-def update_parameters():
+    return Z1, A1, Z2, A2
 
-    return
+def one_hot_converter(Y):
+    one_hot_Y=np.zeros((Y.size, Y.max() + 1))
+    one_hot_Y[np.arange(Y.size, Y)]=1
+    return one_hot_Y.T
 
+def backward_propagation(W1, B1, W2, B2, Z1, A1, Z2, A2, X, Y):
+    one_hot_Y= one_hot_converter(Y)
+    dZ2 = A2 - one_hot_Y
+    dW2 = 1/m * dZ2.dot(A1.T)
+    dB2 = 1/m * np.sum(dZ2)
+
+    dZ1 = W2.T.dot(dZ2) * (Z1 > 0)
+    dW1 = 1/m * dZ1.dot(X.T)
+    dB1 = 1/m * np.sum(dZ1)
+    
+    return dZ1, dW1, dB1, dZ2, dW2, dB2
+
+def update_parameters(W1, B1, W2, B2, dW1, dB1, dW2, dB2, learning_rate):
+    W1 = W1 - learning_rate * dW1
+    B1 = B1 - learning_rate * dB1
+
+    W2 = W2 - learning_rate * dW2
+    B2 = B2 - learning_rate * dB2
+    
+    return W1, B1, W2, B2
+
+def gradient_descent(X, Y, alpha, iterations):      #alpha=learning_rate, iterations=EPOCs
+    W1, B1, W2, B2 = initialize_parameters()
+    Z1, A1, Z2, A2 = forward_propagation(W1, B1, W2, B2, X)      #Forward propagation
+    dW1, dB1, dW2, dB2 = backward_propagation(W1, B1, W2, B2, Z1, A1, Z2, A2, X, Y)
+    W1, B1, W2, B2 = update_parameters(W1, B1, W2, B2, dW1, dB1, dW2, dB2, alpha)
+    
+    return Y
