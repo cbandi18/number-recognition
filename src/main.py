@@ -83,7 +83,7 @@ def get_prediction(A2):
 def get_accuracy(predictions, Y):
     return np.sum(predictions==Y) / Y.size
 
-def gradient_descent(X, Y, alpha, iterations):      #alpha=learning_rate, iterations=EPOCs
+def gradient_descent(X, Y, alpha, iterations):      #alpha=learning_rate, iterations=Epochs
     W1, B1, W2, B2 = initialize_parameters()
 
     for i in range(iterations):
@@ -99,7 +99,7 @@ W1, B1, W2, B2 = gradient_descent(X_train, Y_train, 0.1, 1000)
 
 #Predictions
 val_index=0
-Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val[:,0])
+Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val[:,val_index, None])
 print("Predicted Label: ", get_prediction(A2val))
 print("Actual Label: ", Y_val[val_index])
 
