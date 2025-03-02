@@ -22,11 +22,11 @@ X_val=Val_data[:, 1:].T
 X_val=X_val/255.0       #Scalling (Normalizing the image pixel values, as we want the max pixel value to be 1 (instead of 0-255))
 Y_val=Val_data[:, 0]
 
-print(X_val.shape)      # (n x m)
-print(Y_val.shape)      #Labels in validation
+# print(X_val.shape)      # (n x m)
+# print(Y_val.shape)      #Labels in validation
 
-print(X_train.shape)     #Training set has 33600 examples
-print(Y_train.shape)
+# print(X_train.shape)     #Training set has 33600 examples
+# print(Y_train.shape)
 
 def initialize_parameters():
     W1=np.random.rand(10,784)-0.5
@@ -66,7 +66,7 @@ def backward_propagation(W1, B1, W2, B2, Z1, A1, Z2, A2, X, Y):
     dW1 = 1/m * dZ1.dot(X.T)
     dB1 = 1/m * np.sum(dZ1)
     
-    return dZ1, dW1, dB1, dZ2, dW2, dB2
+    return dW1, dB1, dW2, dB2
 
 def update_parameters(W1, B1, W2, B2, dW1, dB1, dW2, dB2, learning_rate):
     W1 = W1 - learning_rate * dW1
@@ -93,6 +93,16 @@ def gradient_descent(X, Y, alpha, iterations):      #alpha=learning_rate, iterat
 
         if (i%20) == 0:
             print("Iteration number: ", i)
-        print("Accuracy = ", get_accuracy(get_prediction(A2), Y))
+            print("Accuracy = ", get_accuracy(get_prediction(A2), Y))
     return W1, B1, W2, B2
-W1, B1, W2, B2 = gradient_descent(X_train, Y_train, 0.1, 100)
+W1, B1, W2, B2 = gradient_descent(X_train, Y_train, 0.1, 1000)
+
+#Predictions
+val_index=0
+Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val[:,0])
+print("Predicted Label: ", get_prediction(A2val))
+print("Actual Label: ", Y_val[val_index])
+
+image_array = X_val[:, val_index].reshape(28,28)
+plt.imshow(image_array, cmap='gray')
+plt.show()
