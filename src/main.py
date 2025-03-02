@@ -53,7 +53,7 @@ def forward_propagation(W1, B1, W2, B2, X):
 
 def one_hot_converter(Y):
     one_hot_Y=np.zeros((Y.size, Y.max() + 1))
-    one_hot_Y[np.arange(Y.size, Y)]=1
+    one_hot_Y[np.arange(Y.size), Y]=1
     return one_hot_Y.T
 
 def backward_propagation(W1, B1, W2, B2, Z1, A1, Z2, A2, X, Y):
@@ -77,10 +77,22 @@ def update_parameters(W1, B1, W2, B2, dW1, dB1, dW2, dB2, learning_rate):
     
     return W1, B1, W2, B2
 
+def get_prediction(A2):
+    return np.argmax(A2, 0)
+
+def get_accuracy(predictions, Y):
+    return np.sum(predictions==Y) / Y.size
+
 def gradient_descent(X, Y, alpha, iterations):      #alpha=learning_rate, iterations=EPOCs
     W1, B1, W2, B2 = initialize_parameters()
-    Z1, A1, Z2, A2 = forward_propagation(W1, B1, W2, B2, X)      #Forward propagation
-    dW1, dB1, dW2, dB2 = backward_propagation(W1, B1, W2, B2, Z1, A1, Z2, A2, X, Y)
-    W1, B1, W2, B2 = update_parameters(W1, B1, W2, B2, dW1, dB1, dW2, dB2, alpha)
-    
-    return Y
+
+    for i in range(iterations):
+        Z1, A1, Z2, A2 = forward_propagation(W1, B1, W2, B2, X)      #Forward propagation
+        dW1, dB1, dW2, dB2 = backward_propagation(W1, B1, W2, B2, Z1, A1, Z2, A2, X, Y)
+        W1, B1, W2, B2 = update_parameters(W1, B1, W2, B2, dW1, dB1, dW2, dB2, alpha)
+
+        if (i%20) == 0:
+            print("Iteration number: ", i)
+        print("Accuracy = ", get_accuracy(get_prediction(A2), Y))
+    return W1, B1, W2, B2
+W1, B1, W2, B2 = gradient_descent(X_train, Y_train, 0.1, 100)
