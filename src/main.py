@@ -98,7 +98,7 @@ def gradient_descent(X, Y, alpha, iterations):      #alpha=learning_rate, iterat
 W1, B1, W2, B2 = gradient_descent(X_train, Y_train, 0.1, 1000)
 
 #Predictions
-val_index=0
+val_index=1000
 Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val[:,val_index, None])
 print("Predicted Label: ", get_prediction(A2val))
 print("Actual Label: ", Y_val[val_index])
@@ -106,3 +106,9 @@ print("Actual Label: ", Y_val[val_index])
 image_array = X_val[:, val_index].reshape(28,28)
 plt.imshow(image_array, cmap='gray')
 plt.show()
+
+#Validation Accuracy 
+Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val)
+val_acc = get_accuracy(get_prediction(A2val), Y_val)
+
+print("Validation Accuracy: ", val_acc)
