@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Recognizer</title>
+    <script>
+        function predictDigit() {
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            const imageData = ctx.getImageData(0, 0, 28, 28);
+            const pixels = [];
+
+            for (let i = 0; i < imageData.data.length; i += 4) {
+                pixels.push(imageData.data[i] / 255.0);
+            }
+
+            fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pixels })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("prediction").innerText = `Predicted: ${data.prediction}`;
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Draw a digit</h1>
+    <canvas id="canvas" width="28" height="28" style="border:1px solid black;"></canvas>
+    <button onclick="predictDigit()">Predict</button>
+    <p id="prediction">Predicted: </p>
+</body>
+</html>
