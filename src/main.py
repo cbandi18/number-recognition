@@ -118,5 +118,5 @@ val_acc = get_accuracy(get_prediction(A2val), Y_val)
 print("Validation Accuracy: ", val_acc)
 
 #Saving the model
-with open("model.pkl", "wb") as f:
+with open("model/model.pkl", "wb") as f:
     pickle.dump((W1, B1, W2, B2), f)
