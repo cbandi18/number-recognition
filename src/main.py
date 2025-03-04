@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import pickle
 
 data = pd.read_csv('dataset/train.csv')     #Reading the dataset
 
@@ -40,7 +41,8 @@ def ReLU(X):
     return np.maximum(X,0)
 
 def softmax_calculator(Z):
-    return np.exp(Z) / sum(np.exp(Z))
+    exp_Z = np.exp(Z - np.max(Z, axis=0, keepdims=True))
+    return exp_Z / np.sum(exp_Z, axis=0, keepdims=True)
 
 def forward_propagation(W1, B1, W2, B2, X):
     Z1= W1.dot(X)+B1        # y=mx+c
@@ -60,11 +62,11 @@ def backward_propagation(W1, B1, W2, B2, Z1, A1, Z2, A2, X, Y):
     one_hot_Y= one_hot_converter(Y)
     dZ2 = A2 - one_hot_Y
     dW2 = 1/m * dZ2.dot(A1.T)
-    dB2 = 1/m * np.sum(dZ2)
+    dB2 = 1/m * np.sum(dZ2, axis=1, keepdims=True)
 
     dZ1 = W2.T.dot(dZ2) * (Z1 > 0)
     dW1 = 1/m * dZ1.dot(X.T)
-    dB1 = 1/m * np.sum(dZ1)
+    dB1 = 1/m * np.sum(dZ1, axis=1, keepdims=True)
     
     return dW1, dB1, dW2, dB2
 
@@ -95,14 +97,16 @@ def gradient_descent(X, Y, alpha, iterations):      #alpha=learning_rate, iterat
             print("Iteration number: ", i)
             print("Accuracy = ", get_accuracy(get_prediction(A2), Y))
     return W1, B1, W2, B2
+
 W1, B1, W2, B2 = gradient_descent(X_train, Y_train, 0.1, 1000)
 
-#Predictions
+#Validation
 val_index=1000
-Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val[:,val_index, None])
+Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val[:,val_index].reshape(-1,1))
 print("Predicted Label: ", get_prediction(A2val))
 print("Actual Label: ", Y_val[val_index])
 
+#Displaying Image
 image_array = X_val[:, val_index].reshape(28,28)
 plt.imshow(image_array, cmap='gray')
 plt.show()
@@ -112,3 +116,7 @@ Z1val, A1val, Z2val, A2val = forward_propagation(W1, B1, W2, B2, X_val)
 val_acc = get_accuracy(get_prediction(A2val), Y_val)
 
 print("Validation Accuracy: ", val_acc)
+
+#Saving the model
+with open("model.pkl", "wb") as f:
+    pickle.dump((W1, B1, W2, B2), f)
