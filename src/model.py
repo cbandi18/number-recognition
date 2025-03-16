@@ -117,6 +117,9 @@ val_acc = get_accuracy(get_prediction(A2val), Y_val)
 
 print("Validation Accuracy: ", val_acc)
 
+#if __name__ == "__main__":
+    # Call the gradient descent function to train the model
+ #   W1, B1, W2, B2 = gradient_descent(X_train, Y_train, 0.1, 1000)
 #Saving the model
 with open("model/model.pkl", "wb") as f:
     pickle.dump((W1, B1, W2, B2), f)
